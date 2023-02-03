@@ -108,7 +108,7 @@ function App() {
   const [messageHistory, setMessageHistory] = useState([]);
   const [{ data: messagesResponse, loading: loadingMessagesResponse }, getMessages] = 
     useAxios({
-      url: 'http://localhost:8000/api/messages/',
+      url: 'http://api.chatco.danielbsokol.engineer/api/messages/',
       method: 'GET',
     });
   
@@ -132,7 +132,7 @@ function App() {
     console.table(messageHistory);
   }, [messageHistory]);
 
-  const { sendMessage } = useWebSocket(`ws://localhost:8000/ws/chat/`, {
+  const { sendMessage } = useWebSocket(`ws://api.chatco.danielbsokol.engineer/ws/chat/`, {
     onMessage: (e) => {
       const message = JSON.parse(e.data);
       setData((data) => [...data, message]);
@@ -152,7 +152,7 @@ function App() {
   const handleLoadMessagesOnClick = () => {
     setOffset((offset) => {
       getMessages(
-        `http://localhost:8000/api/messages/?limit=10&offset=${offset}`,
+        `http://api.chatco.danielbsokol.engineer/api/messages/?limit=10&offset=${offset}`,
       );
       return offset + 10;
     })
