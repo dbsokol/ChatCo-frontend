@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import moment from "moment";
+
 
 const ChatHistoryTextarea = styled.div.attrs({
   className: 'ChatHistoryTextarea'
@@ -48,37 +50,114 @@ const StyledRelativeButton = styled.button.attrs({
   `
 );
 
-export const ChatHistory = ({ 
-    textInput, 
-    handleLoadMessagesOnClick,
-    loadMessagesButtonEnabled,
-    loadingMessagesResponse,
-    messagesEndRef,
-    setAtBottomOfMessages,
-  }) => {
-    const handleOnScroll = (event) => {
-      if (event.currentTarget.scrollTop < 5) {
-        setAtBottomOfMessages(false);
-      } else setAtBottomOfMessages(true);
-    };
+const Timestamp = styled.span.attrs({
+  className: 'Timestamp',
+})`
+  font-family: monospace, monospace;
+  white-space: pre-wrap;
+  margin-left: 5px;
+  margin-right: 5px;
+`
 
-    return (
-      <ChatHistoryContainer>
-        <LoadMessagesButtonContainer>
-          <StyledRelativeButton 
-            onClick={handleLoadMessagesOnClick}
-            disabled={!loadMessagesButtonEnabled}
-          >
-            Load 10 More Messages
-          </StyledRelativeButton>
-        </LoadMessagesButtonContainer>
-        <ChatHistoryTextarea 
-          onScroll={(event) => handleOnScroll(event)}
-        >
-          {textInput}
-          <div ref={messagesEndRef} />
-        </ChatHistoryTextarea>
-      </ChatHistoryContainer>
-    )
+const Sender = styled.span.attrs({
+  className: 'Sender',
+})`
+  color: ${({ theme }) => theme.nameText};
+  margin-left: 3px;
+`;
+
+const Message = styled.span.attrs({
+  className: 'Message',
+})`
+  margin-left: 3px;
+`;
+
+const TextLine = styled.div.attrs({
+  className: 'TextLine',
+})`
+  // display: flex;
+  overflow-wrap: anywhere;
+  padding: 2px;
+  &:nth-child(2n) {
+    background-color: ${({ theme }) => theme.altLine};
   }
+  -webkit-transition: height .3s ease;
+`;
+
+const ThreeDotsContainer = styled.span.attrs({
+  className: 'ThreeDotsContainer',
+})`
+  margin-left: 3px;
+  width: 60px;
+`;
+
+const ThreeDots = styled.div.attrs({
+  className: 'ThreeDots loader',
+})`
+  display: inline-block;
+`;
+
+export const ChatHistory = ({ 
+  data,
+  messageHistory, 
+  handleLoadMessagesOnClick,
+  loadMessagesButtonEnabled,
+  loadingMessagesResponse,
+  messagesEndRef,
+  setAtBottomOfMessages,
+  otherTypingUsers,
+}) => {      
+  const textInput = [
+    ...messageHistory.sort((a,b) => (a.timestamp > b.timestamp ? 1 : -1)), 
+    ...data,
+  ].map((message, index) => {
+    const timestamp = moment(message.timestamp).format('h:mm A').padStart(8);
+    const sender = <Sender>{message.sender}</Sender>;
+    return (
+      <TextLine key={index}>
+        <Timestamp>{timestamp}</Timestamp> -
+        <Sender>{sender}</Sender>:
+        <Message>{message.content}</Message>
+      </TextLine>
+    )
+  });
+
+  const typingInput = otherTypingUsers
+    ?.filter((typingUser) => typingUser.isTyping)
+    ?.map((typingUser, index) => (
+      <TextLine key={index}>
+        <Timestamp>{' '}typing{' '}</Timestamp> -{' '}
+        <Sender>{typingUser.sender}</Sender>:{' '}
+        <ThreeDotsContainer>
+          <ThreeDots/>
+        </ThreeDotsContainer>
+      </TextLine>
+    ));
+
+  const handleOnScroll = (event) => {
+    if (event.currentTarget.scrollTop < 5) {
+      setAtBottomOfMessages(false);
+    } else setAtBottomOfMessages(true);
+  };
+
+  return (
+    <ChatHistoryContainer>
+      <LoadMessagesButtonContainer>
+        <StyledRelativeButton 
+          onClick={handleLoadMessagesOnClick}
+          disabled={!loadMessagesButtonEnabled}
+        >
+          Load 10 More Messages
+        </StyledRelativeButton>
+      </LoadMessagesButtonContainer>
+      <ChatHistoryTextarea 
+        onScroll={(event) => handleOnScroll(event)}
+      >
+        {textInput}
+        {typingInput}
+        <div ref={messagesEndRef} />
+      </ChatHistoryTextarea>
+    </ChatHistoryContainer>
+  )
+}
   

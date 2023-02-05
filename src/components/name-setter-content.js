@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Title } from './title';
 
 const Content = styled.div.attrs({
   className: 'Content'
@@ -49,32 +50,6 @@ const StyledInput = styled.input.attrs({
   text-align: center;
 `;
 
-const TitleContainer = styled.div.attrs({
-  className: 'TitleContainer'
-})`
-  width: 100%;
-  display: table;
-  text-align: center;
-  background-color: ${({ theme }) => theme.titleBackground};
-  color: ${({ theme }) => theme.titleTextColor};
-
-  padding: 15px;
-  border-radius: 5px;
-  // margin-bottom: 15px;
-
-  @media (max-width: 480px) {
-    // padding-top: 20px;
-    // margin-top: -20px;
-  }
-`;
-
-const StyledH2 = styled.h2.attrs({
-  className: 'StyledH2',
-})`
-  vertical-align: middle;
-  display: table-cell;
-`;
-
 const StartButtonContainer = styled.div.attrs({
   className: 'StartButtonContainer',
 })`
@@ -104,15 +79,11 @@ const StartChatButton = styled.button.attrs({
   `,
 );
 
-export const NameSetter = ({ sender, setSender, setShowChat }) => {
+export const NameSetterContent = ({ sender, setSender, setShowChat }) => {
 
   return (
     <Content>
-      <TitleContainer>
-        <StyledH2>
-          ChatCo | danielbsokol.engineer
-        </StyledH2>
-      </TitleContainer>
+      <Title/>
       <ChatInputSenderContainer>
         <StyledInput 
           placeholder='set your name to start chatting' 
