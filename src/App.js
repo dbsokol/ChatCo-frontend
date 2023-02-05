@@ -43,8 +43,8 @@ const TitleContainer = styled.div.attrs({
   // margin-bottom: 15px;
 
   @media (max-width: 480px) {
-    padding-top: 20px;
-    margin-top: -20px;
+    // padding-top: 50px;
+    // margin-top: -20px;
   }
 `;
 

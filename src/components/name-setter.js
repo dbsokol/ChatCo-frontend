@@ -63,8 +63,8 @@ const TitleContainer = styled.div.attrs({
   // margin-bottom: 15px;
 
   @media (max-width: 480px) {
-    padding-top: 20px;
-    margin-top: -20px;
+    // padding-top: 20px;
+    // margin-top: -20px;
   }
 `;
 
@@ -118,7 +118,7 @@ export const NameSetter = ({ sender, setSender, setShowChat }) => {
           placeholder='set your name to start chatting' 
           value={sender} 
           onChange={(event) => setSender(event.target.value)}
-          onKeyDown={(event) => (event.key === 'Enter' ? setShowChat(true) : null)}
+          onKeyDown={(event) => (event.key === 'Enter' ? setShowChat(Boolean(sender)) : null)}
         />
         <StartButtonContainer>
           <StartChatButton
