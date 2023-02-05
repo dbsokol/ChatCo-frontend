@@ -18,7 +18,6 @@ const Content = styled.div.attrs({
   color: ${({ theme }) => theme.text};
   display: grid;
   grid-template-rows: 2fr 1fr 11fr 1fr;
-
   gap 2em;
   padding 2em;
 
@@ -26,6 +25,7 @@ const Content = styled.div.attrs({
     padding: 0.75em;
     gap 0.75em;
     font-size: smaller;
+    grid-template-rows: 1fr 1fr 3fr 1fr;
   }
 `;
 
@@ -85,7 +85,7 @@ const OptionsContainer = styled.div.attrs({
 display: grid;
 grid-template-columns: 1fr 1fr;
 gap: 2em;
-
+height: 100%;
 max-height: 40px;
 @media (max-width: 480px) {
   gap 0.75em;
@@ -254,18 +254,22 @@ function App() {
               ChatCo | danielbsokol.engineer
             </StyledH2>
           </TitleContainer>
-          <OptionsContainer>
-            <StyledButton
-              onClick={() => setShowChat(false)}
-            >
-              Change Name
-            </StyledButton>
-            <StyledButton
-              onClick={themeToggler}
-            >
-              {theme === 'light' ? 'Dark' : 'Light'} Mode
-            </StyledButton>
-          </OptionsContainer>
+          <div style={{display: 'table', height: '100%'}}>
+            <div style={{verticalAlign: 'middle', display: 'table-cell', height: '100%'}}>
+              <OptionsContainer>
+                <StyledButton
+                  onClick={() => setShowChat(false)}
+                >
+                  Change Name
+                </StyledButton>
+                <StyledButton
+                  onClick={themeToggler}
+                >
+                  {theme === 'light' ? 'Dark' : 'Light'} Mode
+                </StyledButton>
+              </OptionsContainer>
+            </div>
+          </div>
           <ChatHistory 
             textInput={textInput}
             handleLoadMessagesOnClick={handleLoadMessagesOnClick}
