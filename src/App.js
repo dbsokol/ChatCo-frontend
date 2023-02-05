@@ -6,9 +6,9 @@ import { lightTheme, darkTheme } from './constants';
 import { ThemeProvider } from "styled-components";
 import { NameSetterContent } from './components/name-setter-content';
 import { ChatContent } from './components/chat-content';
+import { useIdleTimer } from 'react-idle-timer'
 
 function App() { 
-  const firstRender = useRef(true);
   const messagesEndRef = useRef();
   const [showChat, setShowChat] = useState(false);
   const [atBottomOfMessages, setAtBottomOfMessages] = useState(true);
@@ -25,8 +25,8 @@ function App() {
       url: 'https://api.chatco.danielbsokol.engineer/api/messages/',
       method: 'GET',
     });    
-  const { sendMessage } = useWebSocket(`ws://localhost:8000/ws/chat/`, {
-  // const { sendMessage } = useWebSocket(`wss://api.chatco.danielbsokol.engineer/ws/chat/`, {
+  // const { sendMessage } = useWebSocket(`ws://localhost:8000/ws/chat/`, {
+  const { sendMessage } = useWebSocket(`wss://api.chatco.danielbsokol.engineer/ws/chat/`, {
     onMessage: (e) => {
       const message = JSON.parse(e.data);
       if (message.type === 'message_content') {
@@ -34,7 +34,7 @@ function App() {
         setOffset((offset) => offset + 1);
       }
       else if (message.type === 'typing_status' && sender !== message.sender ) {
-        console.log(message);
+        // console.log(message);
         setOtherTypingUsers((otherTypingUsers) => (
           [
             ...otherTypingUsers.filter((typingUser) => typingUser.sender !== message.sender),
@@ -46,9 +46,41 @@ function App() {
     shouldReconnect: (closeEvent) => true,
   });
 
+  const handleOnIdle = () => {
+    if (!sender) return;
+    sendMessage(JSON.stringify({
+      'type': 'typing_status',
+      'isTyping': false,
+      'sender': sender,
+    }));
+    // console.log('idle message sent!')
+  }
+
+  useIdleTimer({
+    timeout: 5000,
+    onIdle: () => handleOnIdle(),
+    debounce: 500
+  })
+
   useEffect(() => {
-    console.table(otherTypingUsers);
+    // console.table(otherTypingUsers);
   }, [otherTypingUsers])
+
+  useEffect(() => {
+    let timeoutId;
+    const nonTypingUsers = otherTypingUsers.filter((user) => !user.isTyping);
+    const typingUsers = otherTypingUsers.filter((user) => user.isTyping);
+    if (typingUsers.length) {
+      timeoutId = setTimeout(() => {
+        setOtherTypingUsers([
+          ...nonTypingUsers,
+          ...typingUsers.map((user) => ({...user, isTyping: false})),
+        ])
+      }, 5000);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [otherTypingUsers]);
 
   useEffect(() => {
     setMessageHistory((messageHistory) => (
@@ -109,7 +141,9 @@ function App() {
           loadMessagesButtonEnabled={loadMessagesButtonEnabled}
           loadingMessagesResponse={loadingMessagesResponse}
           messagesEndRef={messagesEndRef}
+          atBottomOfMessages={atBottomOfMessages}
           setAtBottomOfMessages={setAtBottomOfMessages}
+          scrollToBottom={scrollToBottom}
           message={message}
           setMessage={setMessage}
           submitMessage={submitMessage}

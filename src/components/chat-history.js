@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import moment from "moment";
+import { useEffect } from 'react';
 
 
 const ChatHistoryTextarea = styled.div.attrs({
@@ -105,6 +106,8 @@ export const ChatHistory = ({
   loadingMessagesResponse,
   messagesEndRef,
   setAtBottomOfMessages,
+  atBottomOfMessages,
+  scrollToBottom,
   otherTypingUsers,
 }) => {      
   const textInput = [
@@ -139,6 +142,12 @@ export const ChatHistory = ({
       setAtBottomOfMessages(false);
     } else setAtBottomOfMessages(true);
   };
+
+  useEffect(() => {
+    // console.log(atBottomOfMessages);
+    if (!atBottomOfMessages) return;
+    scrollToBottom();
+  }, [typingInput]);
 
   return (
     <ChatHistoryContainer>

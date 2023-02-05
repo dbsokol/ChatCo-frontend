@@ -34,6 +34,8 @@ export const ChatContent = ({
   loadingMessagesResponse,
   messagesEndRef,
   setAtBottomOfMessages,
+  atBottomOfMessages,
+  scrollToBottom,
   message,
   setMessage,
   submitMessage,
@@ -60,6 +62,8 @@ export const ChatContent = ({
         loadingMessagesResponse={loadingMessagesResponse}
         messagesEndRef={messagesEndRef}
         setAtBottomOfMessages={setAtBottomOfMessages}
+        atBottomOfMessages={atBottomOfMessages}
+        scrollToBottom={scrollToBottom}
         otherTypingUsers={otherTypingUsers}
       />
       <ChatInput
